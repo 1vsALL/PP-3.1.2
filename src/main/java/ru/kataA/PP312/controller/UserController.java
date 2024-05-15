@@ -1,8 +1,10 @@
 package ru.kataA.PP312.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +37,11 @@ public class UserController {
     }
 
     @PostMapping()
-    public String createUser(@ModelAttribute("user") User user) {
+    public String createUser(@ModelAttribute("user") @Valid User user,
+                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "add";
+        }
         userService.addUser(user);
         return "redirect:/";
     }
@@ -59,7 +65,12 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public String update(@RequestParam("id") int id, @ModelAttribute("user") User user) {
+    public String update(@RequestParam("id") int id,
+                         @ModelAttribute("user") @Valid User user,
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "usersEdit";
+        }
         userService.update(user, id);
         return "redirect:/";
     }
